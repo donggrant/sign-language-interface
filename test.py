@@ -1,8 +1,13 @@
+import logging
+logging.getLogger("tensorflow").setLevel(logging.ERROR)
+logging.getLogger("tensorflow").addHandler(logging.NullHandler(logging.ERROR))
 import tensorflow as tf
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+from PIL import Image
+
 
 class_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y' ]
 
@@ -17,33 +22,39 @@ predict_x = cnn_model.predict(X_test)
 predicted_classes = list(np.argmax(predict_x,axis=1))
 predicted_classes = [class_names[x] for x in predicted_classes]
 
-cam = cv2.VideoCapture(0)
+print("------------------------------------------------------------")
+print("Welcome to the Sign Language Interface!")
 
+cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 cv2.namedWindow("test")
-
 img_name = "opencv_testpic.png"
+
+print("Press SPACE to register signs, and ESCAPE to exit.")
+print("Message: ", end="")
 
 while True:
     ret, frame = cam.read()
     cv2.imshow("test", frame)
     k = cv2.waitKey(1)
-    if k%256 == 32:
+    if k%256 == 27:
+        # ESC pressed
+        print("")
+        print("Program Ended")
+        break
+    elif k%256 == 32:
         # SPACE pressed
         cv2.imwrite(img_name, frame)
-        cam.release()
-        cv2.destroyAllWindows()
-        break
 
-from PIL import Image
-# Preprocess image for model
-img = Image.open(img_name)
-img = img.resize((28, 28))
-img = np.asarray(img)
-img = img[:,:,0] # convert to grayscale
-img = np.reshape(img, (28, 28))
-img = np.array(img.flatten())
-img = img.reshape(1, 28, 28, 1)
-output = cnn_model.predict(img)[0]
-plt.imshow(img.reshape(28,28))
-plt.show()
-print("Predicted as:", class_names[np.argmax(output)])
+        # Preprocess image for model
+        img = Image.open(img_name)
+        img = np.asarray(img.resize((28, 28)))
+        img = img[:,:,0] # convert to grayscale
+        img = np.array(np.reshape(img, (28, 28)).flatten()).reshape(1, 28, 28, 1)
+        output = cnn_model.predict(img)[0]
+        # plt.imshow(img.reshape(28,28))
+        # plt.show()
+        sign = class_names[np.argmax(output)]
+        print(sign, end="")
+
+cam.release()
+cv2.destroyAllWindows()

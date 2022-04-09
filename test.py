@@ -1,6 +1,3 @@
-import logging
-logging.getLogger("tensorflow").setLevel(logging.ERROR)
-logging.getLogger("tensorflow").addHandler(logging.NullHandler(logging.ERROR))
 import tensorflow as tf
 import pandas as pd
 import numpy as np
@@ -36,23 +33,17 @@ while True:
     ret, frame = cam.read()
     cv2.imshow("test", frame)
     k = cv2.waitKey(1)
-    if k%256 == 27:
-        # ESC pressed
+    if k%256 == 27: # ESC pressed
         print("")
         print("Program Ended")
         break
-    elif k%256 == 32:
-        # SPACE pressed
+    elif k%256 == 32: # SPACE pressed
         cv2.imwrite(img_name, frame)
-
-        # Preprocess image for model
         img = Image.open(img_name)
         img = np.asarray(img.resize((28, 28)))
         img = img[:,:,0] # convert to grayscale
         img = np.array(np.reshape(img, (28, 28)).flatten()).reshape(1, 28, 28, 1)
         output = cnn_model.predict(img)[0]
-        # plt.imshow(img.reshape(28,28))
-        # plt.show()
         sign = class_names[np.argmax(output)]
         print(sign, end="")
 

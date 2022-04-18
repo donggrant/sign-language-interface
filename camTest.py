@@ -6,18 +6,10 @@ import cv2
 from PIL import Image
 
 
-class_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y' ]
+class_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y' ]
 
-cnn_model = tf.keras.models.load_model('my_model.h5')
+cnn_model = tf.keras.models.load_model("cnn_model.h5")
 
-test = pd.read_csv("sign_mnist_test.csv")
-test_set = np.array(test, dtype='float32')
-X_test = test_set[:, 1:] / 255
-X_test = X_test.reshape(X_test.shape[0], *(28, 28, 1))
-
-predict_x = cnn_model.predict(X_test) 
-predicted_classes = list(np.argmax(predict_x,axis=1))
-predicted_classes = [class_names[x] for x in predicted_classes]
 
 print("------------------------------------------------------------")
 print("Welcome to the Sign Language Interface!")
@@ -40,12 +32,14 @@ while True:
     elif k%256 == 32: # SPACE pressed
         cv2.imwrite(img_name, frame)
         img = Image.open(img_name)
-        img = np.asarray(img.resize((28, 28)))
-        img = img[:,:,0] # convert to grayscale
-        img = np.array(np.reshape(img, (28, 28)).flatten()).reshape(1, 28, 28, 1)
+        img = np.asarray(img)
+        img = cv2.resize(img,(320,240))
+        img = img.reshape(1, 240, 320,3)
         output = cnn_model.predict(img)[0]
         sign = class_names[np.argmax(output)]
         print(sign, end="")
+        plt.imshow(np.squeeze(img))
+        plt.show()
 
 cam.release()
 cv2.destroyAllWindows()

@@ -18,6 +18,11 @@ cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 cv2.namedWindow("test")
 img_name = "opencv_testpic.png"
 
+cam.set(cv2.CAP_PROP_FRAME_WIDTH, 128)
+cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 128)
+cam.set(cv2.CAP_PROP_FOCUS, 500)
+
+
 print("Press SPACE to register signs, and ESCAPE to exit.")
 print("Message: ", end="")
 
@@ -33,13 +38,11 @@ while True:
         cv2.imwrite(img_name, frame)
         img = Image.open(img_name)
         img = np.asarray(img)
-        img = cv2.resize(img,(320,240))
-        img = img.reshape(1, 240, 320,3)
+        img = cv2.resize(img,(128,128))
+        img = img.reshape(1, 128, 128,3)
         output = cnn_model.predict(img)[0]
         sign = class_names[np.argmax(output)]
         print(sign, end="")
-        plt.imshow(np.squeeze(img))
-        plt.show()
 
 cam.release()
 cv2.destroyAllWindows()

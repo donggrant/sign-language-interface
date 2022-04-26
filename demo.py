@@ -24,7 +24,7 @@ def run_model(model, class_names, frame, window, target, img_name):
 
 def main():
 
-    phrase = "BEWARE"
+    phrase = "HELLOWORLD"
     index = 0
 
 
@@ -46,8 +46,8 @@ def main():
             [sg.Column([[sg.Image(filename='', size=(10, 50), key='image')]], justification='center')],
               [sg.Button('Start', size=(10, 1), font='Helvetica 10'),
                sg.Button('Exit', size=(10, 1), font='Helvetica 10'), 
-               sg.Text(size=(3,1), font='Helvetica 15', key='-OUTPUT-'),
-               sg.Text(size=(30,1), font='Helvetica 10', key='-MSG-')]]
+               sg.Text(size=(3,1), text_color='Black', font='Helvetica 15', key='-OUTPUT-'),
+               sg.Text(size=(30,1), text_color='Lightgreen', font='Helvetica 13', key='-MSG-')]]
 
     # create the window and show it without the plot
     window = sg.Window('Sign Language Interface',
